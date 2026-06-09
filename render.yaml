@@ -1,0 +1,66 @@
+# =============================================================================
+# Render Blueprint for the Community Resource Map
+#
+# This single file tells Render exactly what to build. When you create a
+# "Blueprint Instance" from your GitHub repo, Render reads this and creates:
+#   - a free PostgreSQL database
+#   - a free web service running the Django app
+# and connects them automatically.
+#
+# Docs: https://render.com/docs/blueprint-spec
+# =============================================================================
+
+databases:
+  - name: community-resource-map-db
+    databaseName: community_resource_map
+    user: crm_app
+    plan: free          # Free Postgres: 1 GB storage. NOTE: free databases
+                        # expire ~30 days after creation, so upgrade to a paid
+                        # plan before then if this becomes more than a demo.
+
+services:
+  - type: web
+    name: community-resource-map
+    runtime: python
+    plan: free          # Free web service. NOTE: it sleeps after ~15 min of
+                        # no traffic and takes ~1 min to wake on the next visit.
+    buildCommand: "bash build.sh"
+    startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      # The database connection string is injected automatically from the
+      # database defined above — you never copy or paste it.
+      - key: DATABASE_URL
+        fromDatabase:
+          name: community-resource-map-db
+          property: connectionString
+
+      # Render generates a strong random secret key for you.
+      - key: SECRET_KEY
+        generateValue: true
+
+      # Production mode (turns on HTTPS redirect, secure cookies, etc.).
+      - key: DEBUG
+        value: "False"
+
+      # Pin the Python version so builds are predictable.
+      - key: PYTHON_VERSION
+        value: "3.12.8"
+
+      # Number of worker processes (kept low to fit the free tier's memory).
+      - key: WEB_CONCURRENCY
+        value: "2"
+
+      # Load the sample resources on first deploy so the map isn't empty.
+      # Change to "false" and redeploy once you've added your own data.
+      - key: SEED
+        value: "true"
+
+      # The admin login is created automatically during the build.
+      # Username and email have sensible defaults you can edit; you only need
+      # to type a password when you click "Apply" (it stays hidden/secret).
+      - key: DJANGO_SUPERUSER_USERNAME
+        value: "admin"
+      - key: DJANGO_SUPERUSER_EMAIL
+        value: "admin@example.com"
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false       # Render will prompt you to enter this securely.

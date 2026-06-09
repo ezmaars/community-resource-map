@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Page not found" %} · {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<div class="container py-5 text-center" style="max-width: 560px;">
+  <div style="font-size:3rem" aria-hidden="true">🧭</div>
+  <h1 class="h3 mt-2">{% trans "We couldn't find that page" %}</h1>
+  <p class="resource-meta">{% trans "The link may be old or the resource may have been removed." %}</p>
+  <a href="{% url 'home' %}" class="btn btn-primary mt-2">{% trans "Go home" %}</a>
+</div>
+{% endblock %}

@@ -1,0 +1,187 @@
+/* =========================================================================
+   Community Resource Map — visual identity
+   Calm, warm, trustworthy. Optimized for readability and low-tech users.
+   A light custom layer on top of Bootstrap (no heavy animations).
+   ========================================================================= */
+
+:root {
+  --crm-bg: #faf6ef;            /* warm sand */
+  --crm-surface: #ffffff;
+  --crm-ink: #232020;          /* near-black, soft */
+  --crm-muted: #6b6259;
+  --crm-primary: #2f7d5b;      /* trustworthy green */
+  --crm-primary-dark: #245f46;
+  --crm-accent: #c2622d;       /* warm terracotta accent */
+  --crm-border: #e6ddd0;
+  --crm-radius: 14px;
+  --crm-shadow: 0 1px 2px rgba(35, 32, 32, .06), 0 6px 18px rgba(35, 32, 32, .06);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--crm-bg);
+  color: var(--crm-ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 1.02rem;
+  line-height: 1.55;
+}
+
+h1, h2, h3, h4, .navbar-brand, .display-5 {
+  font-family: "Fraunces", Georgia, "Times New Roman", serif;
+  letter-spacing: -0.01em;
+}
+
+/* ---- Accessibility: visible skip link + focus rings ---- */
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  z-index: 2000;
+  background: var(--crm-ink);
+  color: #fff;
+  padding: .6rem 1rem;
+  border-radius: 0 0 var(--crm-radius) 0;
+}
+.skip-link:focus { left: 0; }
+
+a { color: var(--crm-primary-dark); }
+a:hover { color: var(--crm-primary); }
+
+:focus-visible {
+  outline: 3px solid var(--crm-accent);
+  outline-offset: 2px;
+}
+
+/* ---- Navbar ---- */
+.navbar {
+  background: var(--crm-surface);
+  border-bottom: 1px solid var(--crm-border);
+}
+.navbar-brand {
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--crm-ink);
+}
+.nav-link { color: var(--crm-ink); font-weight: 500; }
+.nav-link:hover { color: var(--crm-primary-dark); }
+
+/* ---- Buttons ---- */
+.btn-primary {
+  --bs-btn-bg: var(--crm-primary);
+  --bs-btn-border-color: var(--crm-primary);
+  --bs-btn-hover-bg: var(--crm-primary-dark);
+  --bs-btn-hover-border-color: var(--crm-primary-dark);
+  --bs-btn-active-bg: var(--crm-primary-dark);
+  font-weight: 600;
+}
+.btn-outline-primary {
+  --bs-btn-color: var(--crm-primary-dark);
+  --bs-btn-border-color: var(--crm-primary);
+  --bs-btn-hover-bg: var(--crm-primary);
+  --bs-btn-hover-border-color: var(--crm-primary);
+}
+
+/* ---- Hero ---- */
+.hero {
+  background:
+    radial-gradient(1200px 400px at 80% -10%, rgba(47,125,91,.10), transparent),
+    var(--crm-surface);
+  border-bottom: 1px solid var(--crm-border);
+  padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(2rem, 5vw, 3.5rem);
+}
+.hero h1 { font-size: clamp(2rem, 5vw, 3rem); }
+.hero .lead { color: var(--crm-muted); max-width: 44ch; }
+
+/* ---- Cards ---- */
+.card {
+  border: 1px solid var(--crm-border);
+  border-radius: var(--crm-radius);
+  background: var(--crm-surface);
+  box-shadow: var(--crm-shadow);
+}
+.card-title { font-family: "Fraunces", Georgia, serif; }
+
+/* ---- Category chips / grid ---- */
+.category-card {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--crm-border);
+  border-radius: var(--crm-radius);
+  background: var(--crm-surface);
+  color: var(--crm-ink);
+  text-decoration: none;
+  transition: border-color .12s ease, transform .12s ease;
+}
+.category-card:hover { border-color: var(--crm-primary); transform: translateY(-2px); color: var(--crm-ink); }
+.category-card .emoji { font-size: 1.6rem; line-height: 1; }
+.category-card .count { color: var(--crm-muted); font-size: .85rem; }
+
+/* ---- Filters bar ---- */
+.filters {
+  background: var(--crm-surface);
+  border: 1px solid var(--crm-border);
+  border-radius: var(--crm-radius);
+  padding: 1rem;
+}
+
+/* ---- Badges / tags ---- */
+.tag-pill {
+  display: inline-block;
+  font-size: .8rem;
+  padding: .15rem .6rem;
+  border-radius: 999px;
+  background: #eef3ee;
+  color: var(--crm-primary-dark);
+  border: 1px solid #dbe7df;
+}
+.badge-free { background: var(--crm-primary); }
+
+/* ---- Map ---- */
+#map {
+  height: 60vh;
+  min-height: 360px;
+  border-radius: var(--crm-radius);
+  border: 1px solid var(--crm-border);
+}
+@media (max-width: 767px) {
+  #map { height: 42vh; min-height: 280px; }
+}
+
+/* ---- Resource list ---- */
+.resource-list { display: grid; gap: 1rem; }
+.resource-item h3 { font-size: 1.15rem; margin-bottom: .25rem; }
+.resource-meta { color: var(--crm-muted); font-size: .9rem; }
+
+/* ---- Empty state ---- */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--crm-muted);
+}
+.empty-state .emoji { font-size: 2.5rem; }
+
+/* ---- Footer ---- */
+.site-footer {
+  margin-top: 3rem;
+  padding: 2rem 0;
+  background: var(--crm-surface);
+  border-top: 1px solid var(--crm-border);
+  color: var(--crm-muted);
+}
+
+/* ---- Forms ---- */
+.form-label { font-weight: 600; }
+.required-mark { color: var(--crm-accent); }
+
+/* ---- Honeypot helper (kept off-screen but present for bots) ---- */
+.visually-hidden,
+.visually-hidden:not(:focus):not(:focus-within) {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0);
+  white-space: nowrap; border: 0;
+}

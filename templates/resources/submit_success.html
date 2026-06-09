@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Thank you" %} · {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center" style="max-width: 620px;">
+  <div style="font-size:3rem" aria-hidden="true">🌱</div>
+  <h1 class="h3 mt-2">{% trans "Thank you for your submission!" %}</h1>
+  <p class="lead resource-meta">
+    {% trans "A volunteer moderator will review it soon. Once approved, it will appear on the map for your whole community to find." %}
+  </p>
+  <div class="d-flex justify-content-center gap-2 mt-4">
+    <a href="{% url 'browse' %}" class="btn btn-primary">{% trans "Back to the map" %}</a>
+    <a href="{% url 'submit' %}" class="btn btn-outline-primary">{% trans "Add another" %}</a>
+  </div>
+</div>
+{% endblock %}

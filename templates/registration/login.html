@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Sign in" %} · {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 420px;">
+  <h1 class="h3 mb-3">{% trans "Staff sign in" %}</h1>
+
+  {% if form.errors %}
+    <div class="alert alert-danger">{% trans "Your username and password didn't match. Please try again." %}</div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="id_username" class="form-label">{% trans "Username" %}</label>
+      <input type="text" name="username" id="id_username" class="form-control" autocomplete="username" required autofocus>
+    </div>
+    <div class="mb-3">
+      <label for="id_password" class="form-label">{% trans "Password" %}</label>
+      <input type="password" name="password" id="id_password" class="form-control" autocomplete="current-password" required>
+    </div>
+    <input type="hidden" name="next" value="{{ next }}">
+    <button type="submit" class="btn btn-primary w-100">{% trans "Sign in" %}</button>
+  </form>
+</div>
+{% endblock %}

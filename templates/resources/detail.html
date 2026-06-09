@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block title %}{{ resource.name }} · {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <nav aria-label="{% trans 'Breadcrumb' %}" class="mb-3">
+    <a href="{% url 'browse' %}">← {% trans "Back to all resources" %}</a>
+  </nav>
+
+  {% if not resource.is_approved %}
+    <div class="alert alert-warning">
+      {% trans "Staff preview: this resource is not yet approved and is hidden from the public." %}
+    </div>
+  {% endif %}
+
+  <div class="row g-4">
+    <div class="col-12 col-lg-7">
+      <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+        <h1 class="h3 mb-0">{{ resource.name }}</h1>
+        {% if resource.is_free %}<span class="badge badge-free">{% trans "Free" %}</span>{% endif %}
+        {% if resource.verification == 'verified' %}
+          <span class="tag-pill" title="{% trans 'Checked by a moderator' %}">✓ {% trans "Verified" %}</span>
+        {% endif %}
+      </div>
+
+      <p class="resource-meta mb-3">
+        <span aria-hidden="true">{{ resource.category.icon }}</span> {{ resource.category.name }}
+        {% with open=resource.is_open_now %}
+          {% if open is True %}· <span style="color:var(--crm-primary-dark)">{% trans "Open now" %}</span>
+          {% elif open is False %}· {% trans "Closed now" %}{% endif %}
+        {% endwith %}
+      </p>
+
+      <p class="lead">{{ resource.description|linebreaksbr }}</p>
+
+      {% if resource.tags.all %}
+        <div class="d-flex flex-wrap gap-2 my-3">
+          {% for tag in resource.tags.all %}<span class="tag-pill">{{ tag.name }}</span>{% endfor %}
+        </div>
+      {% endif %}
+
+      {% if not resource.is_free and resource.cost_notes %}
+        <p><strong>{% trans "Cost:" %}</strong> {{ resource.cost_notes }}</p>
+      {% endif %}
+
+      {% if resource.opening_hours.all %}
+        <h2 class="h6 mt-4">{% trans "Hours" %}</h2>
+        <ul class="list-unstyled resource-meta">
+          {% for h in resource.opening_hours.all %}
+            <li>{{ h.get_day_of_week_display }}: {{ h.opens|time:"g:i A" }} – {{ h.closes|time:"g:i A" }}</li>
+          {% endfor %}
+        </ul>
+      {% elif resource.hours_note %}
+        <h2 class="h6 mt-4">{% trans "Hours" %}</h2>
+        <p class="resource-meta">{{ resource.hours_note }}</p>
+      {% endif %}
+    </div>
+
+    <div class="col-12 col-lg-5">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="h6">{% trans "Contact & location" %}</h2>
+          <ul class="list-unstyled mb-0">
+            {% if resource.full_address %}
+              <li class="mb-2"><span aria-hidden="true">📍</span> {{ resource.full_address }}</li>
+            {% endif %}
+            {% if resource.phone %}
+              <li class="mb-2"><span aria-hidden="true">📞</span> <a href="tel:{{ resource.phone }}">{{ resource.phone }}</a></li>
+            {% endif %}
+            {% if resource.email %}
+              <li class="mb-2"><span aria-hidden="true">✉️</span> <a href="mailto:{{ resource.email }}">{{ resource.email }}</a></li>
+            {% endif %}
+            {% if resource.website %}
+              <li class="mb-2"><span aria-hidden="true">🔗</span>
+                <a href="{{ resource.website }}" rel="noopener noreferrer" target="_blank">{% trans "Visit website" %}</a></li>
+            {% endif %}
+            {% if resource.service_area %}
+              <li class="mb-0"><span aria-hidden="true">👥</span> {{ resource.service_area }}</li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+
+      {% if resource.has_location %}
+        <div id="map" class="mt-3" role="region" aria-label="{% trans 'Location map' %}"
+             data-lat="{{ resource.latitude }}" data-lng="{{ resource.longitude }}"
+             data-name="{{ resource.name }}" data-zoom="15"></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if resource.has_location %}
+<script>
+  (function () {
+    var el = document.getElementById("map");
+    if (!el || typeof L === "undefined") return;
+    var map = L.map(el, { scrollWheelZoom: false })
+      .setView([parseFloat(el.dataset.lat), parseFloat(el.dataset.lng)], parseInt(el.dataset.zoom, 10));
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+    L.marker([parseFloat(el.dataset.lat), parseFloat(el.dataset.lng)])
+      .addTo(map).bindPopup(el.dataset.name || "");
+  })();
+</script>
+{% endif %}
+{% endblock %}

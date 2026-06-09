@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load i18n humanize %}
+
+{% block title %}{% trans "Review queue" %} · {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">{% trans "Moderation queue" %}</h1>
+    <a class="btn btn-outline-primary btn-sm" href="/admin/resources/resource/">{% trans "Open full admin" %}</a>
+  </div>
+
+  <p class="resource-meta">
+    {% blocktrans count counter=pending_count %}{{ counter }} resource is waiting for review.{% plural %}{{ counter }} resources are waiting for review.{% endblocktrans %}
+  </p>
+
+  {% if pending %}
+    <div class="resource-list">
+      {% for resource in pending %}
+        <article class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between flex-wrap gap-2">
+              <h2 class="h5 mb-1">{{ resource.name }}</h2>
+              <span class="resource-meta">{% trans "Submitted" %} {{ resource.created_at|naturaltime }}</span>
+            </div>
+            <p class="resource-meta mb-2">
+              <span aria-hidden="true">{{ resource.category.icon }}</span> {{ resource.category.name }}
+              {% if resource.city %}· {{ resource.city }}{% endif %}
+              · {% if resource.is_free %}{% trans "Free" %}{% else %}{% trans "Paid" %}{% endif %}
+            </p>
+            <p>{{ resource.description|truncatewords:40 }}</p>
+
+            <details class="mb-3">
+              <summary>{% trans "Details" %}</summary>
+              <ul class="resource-meta">
+                {% if resource.full_address %}<li>{{ resource.full_address }}</li>{% endif %}
+                {% if resource.phone %}<li>{{ resource.phone }}</li>{% endif %}
+                {% if resource.email %}<li>{{ resource.email }}</li>{% endif %}
+                {% if resource.website %}<li>{{ resource.website }}</li>{% endif %}
+                {% if resource.hours_note %}<li>{{ resource.hours_note }}</li>{% endif %}
+                {% if resource.submitter_name or resource.submitter_email %}
+                  <li>{% trans "By:" %} {{ resource.submitter_name }} {{ resource.submitter_email }}</li>
+                {% endif %}
+              </ul>
+              <a href="/admin/resources/resource/{{ resource.id }}/change/">{% trans "Edit before approving →" %}</a>
+            </details>
+
+            <form method="post" class="row g-2 align-items-end">
+              {% csrf_token %}
+              <input type="hidden" name="resource_id" value="{{ resource.id }}">
+              <div class="col-12 col-md">
+                <label for="notes-{{ resource.id }}" class="form-label">{% trans "Review notes (optional)" %}</label>
+                <input type="text" id="notes-{{ resource.id }}" name="review_notes" class="form-control"
+                       placeholder="{% trans 'e.g. confirmed by phone' %}">
+              </div>
+              <div class="col-auto">
+                <button type="submit" name="action" value="approve" class="btn btn-primary">✓ {% trans "Approve" %}</button>
+              </div>
+              <div class="col-auto">
+                <button type="submit" name="action" value="reject" class="btn btn-outline-primary">✕ {% trans "Reject" %}</button>
+              </div>
+            </form>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="emoji" aria-hidden="true">✅</div>
+      <p><strong>{% trans "The queue is empty. Nice work!" %}</strong></p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

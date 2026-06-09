@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-7">
+        <h1 class="mb-3">{% trans "Find free help near you" %}</h1>
+        <p class="lead mb-4">
+          {% trans "Search local food banks, shelters, clinics, legal aid, classes, job support, and emergency assistance — all in one place." %}
+        </p>
+        <form action="{% url 'browse' %}" method="get" role="search" class="row g-2">
+          <div class="col-12 col-sm">
+            <label for="home-search" class="visually-hidden">{% trans "Search for help" %}</label>
+            <input type="search" id="home-search" name="q" class="form-control form-control-lg"
+                   placeholder="{% trans 'e.g. food, shelter, free clinic…' %}">
+          </div>
+          <div class="col-12 col-sm-auto">
+            <button type="submit" class="btn btn-primary btn-lg w-100">{% trans "Search" %}</button>
+          </div>
+        </form>
+        {% if total %}
+          <p class="resource-meta mt-3 mb-0">
+            {% blocktrans count counter=total %}{{ counter }} verified resource available.{% plural %}{{ counter }} verified resources available.{% endblocktrans %}
+          </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container py-5">
+  <h2 class="h4 mb-3">{% trans "Browse by category" %}</h2>
+  <div class="row g-3">
+    {% for category in categories %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <a class="category-card" href="{% url 'browse' %}?category={{ category.slug }}">
+          <span class="emoji" aria-hidden="true">{{ category.icon|default:'•' }}</span>
+          <span>
+            <strong class="d-block">{{ category.name }}</strong>
+            <span class="count">{{ category.resources.count }} {% trans "listed" %}</span>
+          </span>
+        </a>
+      </div>
+    {% empty %}
+      <p class="text-muted">{% trans "No categories yet." %}</p>
+    {% endfor %}
+  </div>
+</section>
+
+{% if recent %}
+<section class="container pb-5">
+  <div class="d-flex justify-content-between align-items-end mb-3">
+    <h2 class="h4 mb-0">{% trans "Recently added" %}</h2>
+    <a href="{% url 'browse' %}">{% trans "See all on the map →" %}</a>
+  </div>
+  <div class="row g-3">
+    {% for resource in recent %}
+      <div class="col-12 col-md-6 col-lg-4">
+        {% include "resources/_resource_card.html" with resource=resource %}
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

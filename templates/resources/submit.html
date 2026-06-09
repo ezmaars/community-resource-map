@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Add a resource" %} · {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 760px;">
+  <h1 class="h3 mb-2">{% trans "Suggest a community resource" %}</h1>
+  <p class="resource-meta mb-4">
+    {% trans "Thank you for helping your neighbors. A volunteer moderator will review your suggestion before it appears on the map." %}
+  </p>
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+  {% endif %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    {# Honeypot field — hidden from people, tempting to bots #}
+    {{ form.company }}
+
+    <fieldset class="mb-4">
+      <legend class="h6">{% trans "About the service" %}</legend>
+      {% include "resources/_field.html" with field=form.name required=True %}
+      {% include "resources/_field.html" with field=form.category required=True %}
+      {% include "resources/_field.html" with field=form.description required=True %}
+      {% include "resources/_field.html" with field=form.service_area %}
+    </fieldset>
+
+    <fieldset class="mb-4">
+      <legend class="h6">{% trans "Location" %}</legend>
+      {% include "resources/_field.html" with field=form.address %}
+      <div class="row">
+        <div class="col-md-6">{% include "resources/_field.html" with field=form.city %}</div>
+        <div class="col-md-3">{% include "resources/_field.html" with field=form.state %}</div>
+        <div class="col-md-3">{% include "resources/_field.html" with field=form.postal_code %}</div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">{% include "resources/_field.html" with field=form.latitude %}</div>
+        <div class="col-md-6">{% include "resources/_field.html" with field=form.longitude %}</div>
+      </div>
+    </fieldset>
+
+    <fieldset class="mb-4">
+      <legend class="h6">{% trans "Contact & hours" %}</legend>
+      {% include "resources/_field.html" with field=form.phone %}
+      {% include "resources/_field.html" with field=form.email %}
+      {% include "resources/_field.html" with field=form.website %}
+      {% include "resources/_field.html" with field=form.hours_note %}
+    </fieldset>
+
+    <fieldset class="mb-4">
+      <legend class="h6">{% trans "Cost" %}</legend>
+      <div class="form-check mb-2">
+        {{ form.is_free }}
+        <label class="form-check-label" for="{{ form.is_free.id_for_label }}">{{ form.is_free.label }}</label>
+      </div>
+      {% include "resources/_field.html" with field=form.cost_notes %}
+    </fieldset>
+
+    <fieldset class="mb-4">
+      <legend class="h6">{% trans "Features" %}</legend>
+      <div class="d-flex flex-wrap gap-3">
+        {% for checkbox in form.tags %}
+          <div class="form-check">
+            {{ checkbox.tag }}
+            <label class="form-check-label" for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+          </div>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <fieldset class="mb-4">
+      <legend class="h6">{% trans "Your details (optional)" %}</legend>
+      <p class="resource-meta">{% trans "Only used if a moderator needs to follow up. Never shown publicly." %}</p>
+      {% include "resources/_field.html" with field=form.submitter_name %}
+      {% include "resources/_field.html" with field=form.submitter_email %}
+    </fieldset>
+
+    <button type="submit" class="btn btn-primary btn-lg">{% trans "Submit for review" %}</button>
+  </form>
+</div>
+{% endblock %}

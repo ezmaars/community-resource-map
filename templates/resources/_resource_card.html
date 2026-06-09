@@ -1,0 +1,21 @@
+{% load i18n %}
+<article class="card h-100 resource-item">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-start gap-2">
+      <h3 class="card-title h5 mb-1">
+        <a href="{{ resource.get_absolute_url }}" class="stretched-link text-decoration-none">{{ resource.name }}</a>
+      </h3>
+      {% if resource.is_free %}
+        <span class="badge badge-free">{% trans "Free" %}</span>
+      {% endif %}
+    </div>
+    <p class="resource-meta mb-2">
+      <span aria-hidden="true">{{ resource.category.icon }}</span> {{ resource.category.name }}
+      {% if resource.city %}· {{ resource.city }}{% endif %}
+    </p>
+    <p class="mb-2">{{ resource.description|truncatewords:22 }}</p>
+    {% if resource.hours_note %}
+      <p class="resource-meta mb-0"><span aria-hidden="true">🕒</span> {{ resource.hours_note }}</p>
+    {% endif %}
+  </div>
+</article>
